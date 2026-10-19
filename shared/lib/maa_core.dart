@@ -8,7 +8,11 @@ import 'package:http/http.dart' as http;
 
 /// عنوان لوحة التحكم المنشورة (مثال: https://maa-admin.vercel.app).
 /// يُمرَّر عند البناء: --dart-define=MAA_API_URL=https://...
-const String maaApiUrl = String.fromEnvironment('MAA_API_URL');
+const String _maaApiUrlEnv = String.fromEnvironment('MAA_API_URL');
+const String _maaApiUrlDefault = 'https://sikka-food-admin.vercel.app';
+
+/// يُستخدم العنوان الافتراضي إذا لم يُمرَّر MAA_API_URL (أو مُرّر فارغًا).
+String get maaApiUrl => _maaApiUrlEnv.isEmpty ? _maaApiUrlDefault : _maaApiUrlEnv;
 
 const statusActive = 'نشط';
 const statusPending = 'بانتظار الموافقة';
