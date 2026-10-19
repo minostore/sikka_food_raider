@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
+
 import '../lib/main.dart';
 
 void main() {
-  testWidgets('driver home renders availability and earnings', (tester) async {
-    await tester.pumpWidget(const MaaDriverApp(firebaseReady: false));
+  testWidgets('shows setup notice when Firebase is not configured', (tester) async {
+    await tester.pumpWidget(const MaaDriverApp(session: null));
     await tester.pumpAndSettle();
-    expect(find.text('متاح لاستقبال الطلبات'), findsOneWidget);
-    expect(find.text('أرباح اليوم'), findsOneWidget);
+    expect(find.textContaining('Firebase'), findsOneWidget);
   });
 }

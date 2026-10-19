@@ -8,6 +8,13 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+export 'package:cloud_firestore/cloud_firestore.dart';
+export 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth, User;
+export 'maa_auth_ui.dart';
+export 'maa_core.dart';
+export 'maa_support.dart';
+export 'maa_location.dart';
+
 const _roles = {'customer', 'driver', 'restaurant'};
 
 class MaaMessaging {
@@ -73,6 +80,30 @@ class MaaMessaging {
       debugPrint('Could not inspect the launch notification: $error');
     }
     _initialized = true;
+  }
+
+  /// إشعار محلي فوري (مثل: وصول طلب جديد للمطعم أثناء فتح التطبيق).
+  static Future<void> showLocal(String title, String body) async {
+    try {
+      await _local.show(
+        DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        title,
+        body,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'maa_announcements',
+            'إشعارات معًا',
+            channelDescription: 'إشعارات الطلبات والإعلانات وتحديثات التطبيق',
+            importance: Importance.high,
+            priority: Priority.high,
+            icon: '@mipmap/ic_launcher',
+          ),
+          iOS: DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true),
+        ),
+      );
+    } catch (error) {
+      debugPrint('Local notification failed: $error');
+    }
   }
 
   static void openPendingInbox() {
