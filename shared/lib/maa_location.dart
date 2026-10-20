@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'maa_core.dart';
 
@@ -74,3 +75,12 @@ class MaaLocationPublisher {
     _sub = null;
   }
 }
+
+/// يفتح تطبيق الخرائط للتوجه إلى الإحداثيات.
+Future<bool> maaOpenMaps(double lat, double lng) => launchUrl(
+    Uri.parse('https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&travelmode=driving'),
+    mode: LaunchMode.externalApplication);
+
+/// يتصل برقم هاتف.
+Future<bool> maaCall(String phone) =>
+    launchUrl(Uri(scheme: 'tel', path: phone.replaceAll(RegExp(r'\s'), '')));

@@ -26,6 +26,13 @@ const orderDone = 'مكتمل';
 const orderCancelled = 'ملغي';
 const activeOrderStatuses = [orderNew, orderPreparing, orderReady, orderDelivering];
 
+const maaGovernorates = [
+  'القاهرة', 'الجيزة', 'الإسكندرية', 'القليوبية', 'الشرقية', 'الدقهلية', 'البحيرة',
+  'المنوفية', 'الغربية', 'كفر الشيخ', 'دمياط', 'بورسعيد', 'الإسماعيلية', 'السويس',
+  'شمال سيناء', 'جنوب سيناء', 'الفيوم', 'بني سويف', 'المنيا', 'أسيوط', 'سوهاج',
+  'قنا', 'الأقصر', 'أسوان', 'البحر الأحمر', 'الوادي الجديد', 'مطروح',
+];
+
 const roleCollections = {
   'customer': 'customers',
   'restaurant': 'restaurants',
@@ -158,6 +165,8 @@ class MaaSession extends ChangeNotifier {
     String address = '',
     String vehicle = '',
     String owner = '',
+    String governorate = '',
+    String area = '',
   }) async {
     if (maaApiUrl.isEmpty) {
       throw Exception('لم يُضبط عنوان الخادم MAA_API_URL عند بناء التطبيق.');
@@ -180,6 +189,8 @@ class MaaSession extends ChangeNotifier {
               'address': address,
               'vehicle': vehicle,
               'owner': owner,
+              'governorate': governorate,
+              'area': area,
             }),
           )
           .timeout(const Duration(seconds: 25));

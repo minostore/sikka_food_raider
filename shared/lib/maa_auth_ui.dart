@@ -120,6 +120,8 @@ class _MaaLoginPageState extends State<MaaLoginPage> {
   final _address = TextEditingController();
   final _vehicle = TextEditingController();
   final _owner = TextEditingController();
+  final _area = TextEditingController();
+  String _governorate = '';
   bool _register = false;
   bool _busy = false;
   bool _hide = true;
@@ -130,7 +132,7 @@ class _MaaLoginPageState extends State<MaaLoginPage> {
 
   @override
   void dispose() {
-    for (final c in [_name, _email, _phone, _password, _address, _vehicle, _owner]) {
+    for (final c in [_name, _email, _phone, _password, _address, _vehicle, _owner, _area]) {
       c.dispose();
     }
     super.dispose();
@@ -152,7 +154,9 @@ class _MaaLoginPageState extends State<MaaLoginPage> {
             password: _password.text,
             address: _address.text.trim(),
             vehicle: _vehicle.text.trim(),
-            owner: _owner.text.trim());
+            owner: _owner.text.trim(),
+            governorate: _governorate,
+            area: _area.text.trim());
       } else {
         await widget.session.signIn(_email.text, _password.text);
       }
@@ -223,6 +227,32 @@ class _MaaLoginPageState extends State<MaaLoginPage> {
                             ? 'أدخل رقم هاتف صحيحًا'
                             : null,
                         icon: Icons.phone_outlined),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: DropdownButtonFormField<String>(
+                        initialValue: _governorate.isEmpty ? null : _governorate,
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                            labelText: role == 'customer' ? 'المحافظة' : 'المحافظة (مطلوبة)',
+                            prefixIcon: const Icon(Icons.map_outlined),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide.none)),
+                        items: [
+                          for (final g in maaGovernorates)
+                            DropdownMenuItem(value: g, child: Text(g))
+                        ],
+                        validator: (v) => role != 'customer' && (v == null || v.isEmpty)
+                            ? 'اختر المحافظة'
+                            : null,
+                        onChanged: (v) => setState(() => _governorate = v ?? ''),
+                      ),
+                    ),
+                    _field(_area, role == 'customer' ? 'المنطقة' : 'المنطقة (مطلوبة)',
+                        icon: Icons.place_outlined,
+                        validator: role == 'customer' ? null : _required),
                     _field(_address, restaurant ? 'عنوان المطعم' : 'العنوان',
                         icon: Icons.location_on_outlined,
                         validator: role == 'driver' ? null : _required),

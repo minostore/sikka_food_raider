@@ -14,6 +14,7 @@ export 'maa_auth_ui.dart';
 export 'maa_core.dart';
 export 'maa_support.dart';
 export 'maa_location.dart';
+export 'maa_widgets.dart';
 
 const _roles = {'customer', 'driver', 'restaurant'};
 
