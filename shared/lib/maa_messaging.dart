@@ -156,31 +156,27 @@ class MaaMessaging {
     if (!_roles.contains(role)) return const [];
     final db = FirebaseFirestore.instance;
     final results = await Future.wait([
+      // شرط واحد فقط (بدون فهرس مركّب)، والتصفية والترتيب يتمان هنا
       db
           .collection('broadcastMessages')
-          .where('published', isEqualTo: true)
-          .where('inAppEnabled', isEqualTo: true)
           .where('audienceIds', arrayContains: role)
-          .orderBy('createdAt', descending: true)
-          .limit(50)
+          .limit(100)
           .get(),
       db
           .collection('appUpdates')
-          .where('published', isEqualTo: true)
           .where('audienceIds', arrayContains: role)
-          .orderBy('createdAt', descending: true)
-          .limit(30)
+          .limit(60)
           .get(),
     ]);
     final messages = <Map<String, dynamic>>[];
-    for (final document in results[0].docs) {
+    for (final document in results[0].docs.where((d) => d.data()['published'] == true && d.data()['inAppEnabled'] == true)) {
       messages.add({
         'id': document.id,
         'kind': 'notification',
         ...document.data(),
       });
     }
-    for (final document in results[1].docs) {
+    for (final document in results[1].docs.where((d) => d.data()['published'] == true)) {
       messages.add({
         'id': document.id,
         'kind': 'appUpdate',
@@ -202,14 +198,14 @@ class MaaMessaging {
     try {
       final latest = await FirebaseFirestore.instance
           .collection('appUpdates')
-          .where('published', isEqualTo: true)
           .where('audienceIds', arrayContains: role)
-          .orderBy('createdAt', descending: true)
-          .limit(10)
+          .limit(30)
           .get();
       final info = await PackageInfo.fromPlatform();
       final currentBuild = int.tryParse(info.buildNumber) ?? 0;
-      final updates = latest.docs.map((document) => document.data()).where((
+      final updates = (latest.docs.map((document) => document.data()).where((u) => u['published'] == true).toList()
+        ..sort((a, b) => _date(b['createdAt']).compareTo(_date(a['createdAt']))))
+        .where((
         update,
       ) {
         final targetBuild = _number(update['minBuildNumber']);

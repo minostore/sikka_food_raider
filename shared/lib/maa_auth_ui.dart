@@ -227,7 +227,8 @@ class _MaaLoginPageState extends State<MaaLoginPage> {
                             ? 'أدخل رقم هاتف صحيحًا'
                             : null,
                         icon: Icons.phone_outlined),
-                    Padding(
+                    if (role != 'customer')
+                      Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: DropdownButtonFormField<String>(
                         initialValue: _governorate.isEmpty ? null : _governorate,
@@ -250,10 +251,12 @@ class _MaaLoginPageState extends State<MaaLoginPage> {
                         onChanged: (v) => setState(() => _governorate = v ?? ''),
                       ),
                     ),
-                    _field(_area, role == 'customer' ? 'المنطقة' : 'المنطقة (مطلوبة)',
+                    if (role != 'customer')
+                      _field(_area, role == 'customer' ? 'المنطقة' : 'المنطقة (مطلوبة)',
                         icon: Icons.place_outlined,
                         validator: role == 'customer' ? null : _required),
-                    _field(_address, restaurant ? 'عنوان المطعم' : 'العنوان',
+                    if (role != 'customer')
+                      _field(_address, restaurant ? 'عنوان المطعم' : 'العنوان',
                         icon: Icons.location_on_outlined,
                         validator: role == 'driver' ? null : _required),
                     if (driver)
